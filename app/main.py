@@ -1,4 +1,3 @@
-import math
 import time
 from hashlib import sha256
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -38,13 +37,13 @@ def find_passwords(start: int, end: int, target_hashes: set) -> dict:
 def brute_force_password() -> None:
     num_cores = os.cpu_count()
     target_hashes = set(PASSWORDS_TO_BRUTE_FORCE)
-    range_per_core = math.ceil(100_000_000 / num_cores)
+    range_per_core = 100_000_000 // num_cores
     tasks = []
 
     with ProcessPoolExecutor(max_workers=num_cores) as executor:
         for i in range(num_cores):
             start = i * range_per_core
-            end = (i + 1) * range_per_core
+            end = start + range_per_core if i < num_cores - 1 else 100_000_000
             tasks.append(executor.submit(
                 find_passwords,
                 start,
